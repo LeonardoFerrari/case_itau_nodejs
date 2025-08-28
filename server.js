@@ -1,99 +1,30 @@
+require('dotenv').config();
+
 const express = require('express');
-const db = require('./database');
+const config = require('./app/config/init');
+const rateConf = require('./app/config/rate.conf');
+const exHandler = require('./app/exceptions/exceptions');
+const clienteRoutes = require('./app/routes/cliente.routes');
 
-const app = express();
+const startServer = async () => {
+    const app = express();
+    await require('./app/database/init').initDb();
 
-app.use(express.json());
+    app.use(rateConf);
+    app.use(express.json());
+    app.get('/', (req, res) => res.send('API de Clientes - case itau nodejs'));
+    app.use('/clientes', clienteRoutes);
+    app.use(exHandler);
 
-app.listen(8080, () => {
-    console.log("Server Listening on PORT:", 8080);
-  });
+    app.listen(config.app.port, () => {
+        console.log(`Server running on port ${config.app.port} in ${config.app.env} mode.`);
+    });
 
-  app.get('/clientes', (req,res) => {
-    const query = 'SELECT * FROM clientes';
-    db.all(query, [], (err,rows) => {
-        if (err) 
-            return res.status(400).json({error: err.message});
-        return res.json(rows);
-    })
-})
+    return app;
+}
 
-app.get('/clientes/:id', (req,res) => {
-    const {id} = req.params;
-    const query = 'SELECT * FROM clientes WHERE id = ?';
-    db.all(query, [id], (err,rows) => {
-        if (err) 
-            return res.status(400).json({error: err.message});
-        return res.json(rows);
-    })
-})
 
-app.post('/clientes', (req,res) => {
-    const {nome, email } = req.body;
-    try
-    {
-        db.run(`INSERT INTO clientes(nome, email) VALUES(?, ?)`, [nome, email]);
-        return res.status(200).json();
-    }
-    catch(err){
-        console.log(err);
-        return res.status(400).json(err);
-    }
-})
-
-app.put('/clientes/:id', (req,res) => {
-    const { id } = req.params;
-    const {nome, email } = req.body;
-    try
-    {
-        db.run(`UPDATE clientes SET nome = ?, email = ? WHERE id = ?`, [nome, email, id]);
-        return res.status(200).json();
-    }
-    catch(err){
-        console.log(err);
-        return res.status(400).json(err);
-    }
-})
-
-app.delete('/clientes/:id', (req,res) => {
-    const { id } = req.params;
-    try
-    {
-        db.run(`DELETE FROM clientes WHERE id = ?`, [id]);
-        return res.status(200).json();
-    }
-    catch(err){
-        console.log(err);
-        return res.status(400).json(err);
-    }
-})
-
-app.post('/clientes/:id/depositar', (req,res) => {
-    const { id } = req.params;
-    const { valor } = req.body;
-    console.log({id, valor});
-    try
-    {
-        db.run(`UPDATE clientes SET saldo = saldo + ? WHERE id = ?`, [valor, id]);
-        return res.status(200).json();
-    }
-    catch(err){
-        console.log(err);
-        return res.status(400).json(err);
-    }
-})
-
-app.post('/clientes/:id/sacar', (req,res) => {
-    const { id } = req.params;
-    const { valor } = req.body;
-    console.log({id, valor});
-    try
-    {
-        db.run(`UPDATE clientes SET saldo = saldo - ? WHERE id = ?`, [valor, id]);
-        return res.status(200).json();
-    }
-    catch(err){
-        console.log(err);
-        return res.status(400).json(err);
-    }
-})
+startServer()
+    .catch(err => {
+    console.error("Failed to start the server:", err);
+});

@@ -1,16 +1,27 @@
 {
   "name": "case_itau_nodejs",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Leonardo Ferrari SOares",
   "license": "ISC",
-  "description": "",
+  "description": "case itau",
   "dependencies": {
-    "express": "^4.21.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "helmet": "^7.1.0",
+    "joi": "^17.13.3",
+    "morgan": "^1.10.0",
+    "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
+  },  
+    "devDependencies": {
+    "nodemon": "^3.1.4"
   }
 }

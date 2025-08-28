@@ -1,0 +1,62 @@
+@baseUrl = http://localhost:8080
+@clienteId = 2
+
+##
+## CRUD
+##
+
+### Get all
+GET {{baseUrl}}/clientes
+
+### Get por ID
+GET {{baseUrl}}/clientes/{{clienteId}}
+
+### Criar cliente
+POST {{baseUrl}}/clientes
+Content-Type: application/json
+
+{
+    "nome": "Joãko da Silva",
+    "email": "joako.silva@example.com"
+}
+
+### Atualizar cliente
+PUT {{baseUrl}}/clientes/{{clienteId}}
+Content-Type: application/json
+
+{
+    "nome": "Makria Souza",
+    "email": "makria.souza@example.com"
+}
+
+### excluir cliente
+DELETE {{baseUrl}}/clientes/{{clienteId}}
+
+
+##
+## Saldo
+##
+
+### depositar valor
+POST {{baseUrl}}/clientes/{{clienteId}}/depositar
+Content-Type: application/json
+
+{
+    "valor": 10
+}
+
+### saque de valor normal, deve funcionar
+POST {{baseUrl}}/clientes/{{clienteId}}/sacar
+Content-Type: application/json
+
+{
+    "valor": 100
+}
+
+### valor maior que o saldo tem que dar erro
+POST {{baseUrl}}/clientes/{{clienteId}}/sacar
+Content-Type: application/json
+
+{
+    "valor": 99999
+}
